@@ -16,7 +16,7 @@ MUT_RATE = 0.2
 #TARGET: Our goal.
 TARGET = 'Adil'
 TARGET = 'Aqil'
-TARGET = st.text_input("Enter your name")
+TARGET = st.text_input("Enter your name", "Acap")
 
 #GENES: Options from which our population would be created.
 GENES = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
