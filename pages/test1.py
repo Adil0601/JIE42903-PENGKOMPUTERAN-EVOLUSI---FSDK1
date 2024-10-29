@@ -53,7 +53,7 @@ for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
 
 fig.set_size_inches(16, 12)
 st.show()
-
+st.pyplot(fig)
 #population
 def initial_population(cities_list, n_population = 250):
 
@@ -309,4 +309,5 @@ for i, txt in enumerate(shortest_path):
 
 fig.set_size_inches(16, 12)
 # plt.grid(color='k', linestyle='dotted')
-plt.show()
+st.pyplot(fig)
+
