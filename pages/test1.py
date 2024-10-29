@@ -52,7 +52,7 @@ for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
             ax.plot([city_x, other_x], [city_y, other_y], color='gray', linestyle='-', linewidth=1, alpha=0.1)
 
 fig.set_size_inches(16, 12)
-st.show()
+
 st.pyplot(fig)
 #population
 def initial_population(cities_list, n_population = 250):
