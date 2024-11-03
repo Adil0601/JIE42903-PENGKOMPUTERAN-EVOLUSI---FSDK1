@@ -8,8 +8,8 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-x = [1,3,5,7,8,10,13,12,14,10.16]
-y = [0,2,6,7.9,11,10.9,11,8,12,12]
+x = [1,3,5,7,8,10,13,12,14,10.110]
+y = [0,2,6,7.9,11,10.9,11,8,7,11]
 cities_names = ["JOHOR", "MELAKA", "NEGERI SEMBILAN", "KUALA LUMPUR", "SELANGOR", "PERAK", "KEDAH", "PERLIS", "KELANTAN", "TERENGGANU"]
 city_coords = dict(zip(cities_names, zip(x, y)))
 n_population = 250
