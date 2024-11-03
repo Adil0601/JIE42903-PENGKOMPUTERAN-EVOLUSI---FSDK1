@@ -24,7 +24,7 @@ colors = sns.color_palette("pastel", len(cities_names))
 city_icons = {
     "JOHOR": "♕",
     "MELAKA": "♖",
-    "N.SENBILAN": "♗",
+    "N.SEMBILAN": "♗",
     "K.LUMPUR": "♘",
     "SELANGOR": "♙",
     "PERAK": "♔",
