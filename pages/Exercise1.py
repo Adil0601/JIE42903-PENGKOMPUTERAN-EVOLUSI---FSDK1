@@ -22,16 +22,16 @@ colors = sns.color_palette("pastel", len(cities_names))
 
 # City Icons
 city_icons = {
-    "Gliwice": "♕",
-    "Cairo": "♖",
-    "Rome": "♗",
-    "Krakow": "♘",
-    "Paris": "♙",
-    "Alexandria": "♔",
-    "Berlin": "♚",
-    "Tokyo": "♛",
-    "Rio": "♜",
-    "Budapest": "♝"
+    "JOHOR": "♕",
+    "MELAKA": "♖",
+    "N.SENBILAN": "♗",
+    "K.LUMPUR": "♘",
+    "SELANGOR": "♙",
+    "PERAK": "♔",
+    "KEDAH": "♚",
+    "PERLIS": "♛",
+    "KELANTAN": "♜",
+    "TERENGGANU": "♝"
 }
 
 fig, ax = plt.subplots()
