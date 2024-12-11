@@ -19,7 +19,7 @@ def read_csv_to_dict(file_path):
     return program_ratings
 
 # Path to the CSV file
-file_path = 'program_ratings.csv'  # Make sure the CSV is in the same directory
+file_path = 'pages/program_ratings.csv'  # Make sure the CSV is in the same directory
 
 def fitness_function(schedule):
     total_rating = 0
