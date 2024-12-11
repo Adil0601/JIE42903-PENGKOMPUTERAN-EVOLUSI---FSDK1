@@ -10,3 +10,6 @@ Pillow
 streamlit
 streamlit_drawable_canvas
 opencv-contrib-python-headless
+
+prettytable
+streamlit
