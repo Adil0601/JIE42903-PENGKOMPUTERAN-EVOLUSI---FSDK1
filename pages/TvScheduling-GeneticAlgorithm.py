@@ -1,34 +1,33 @@
 import csv
-import streamlit as st
+import random
+from prettytable import PrettyTable  # Importing PrettyTable for formatting the table
 
 # Function to read the CSV file and convert it to the desired format
 def read_csv_to_dict(file_path):
     program_ratings = {}
-    
+
     with open(file_path, mode='r', newline='') as file:
         reader = csv.reader(file)
         # Skip the header
         header = next(reader)
-        
+
         for row in reader:
             program = row[0]
             ratings = [float(x) for x in row[1:]]  # Convert the ratings to floats
             program_ratings[program] = ratings
-    
+
     return program_ratings
 
 # Path to the CSV file
-file_path = 'pages/program_ratings.csv'
+file_path = '/content/program_ratings.csv'
 
 # Get the data in the required format
 program_ratings_dict = read_csv_to_dict(file_path)
 
 # Print the result (you can also return or process it further)
 for program, ratings in program_ratings_dict.items():
-    st.write(f"'{program}': {ratings},")
+    print(f"'{program}': {ratings},")
 
-
-import random
 
 ##################################### DEFINING PARAMETERS AND DATASET ################################################################
 # Sample rating programs dataset for each time slot.
@@ -104,11 +103,7 @@ def evaluate_fitness(schedule):
     return fitness_function(schedule)
 
 # genetic algorithms with parameters
-
-
-
 def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, crossover_rate=CO_R, mutation_rate=MUT_R, elitism_size=EL_S):
-
     population = [initial_schedule]
 
     for _ in range(population_size - 1):
@@ -119,7 +114,7 @@ def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, cr
     for generation in range(generations):
         new_population = []
 
-        # Elitsm
+        # Elitism
         population.sort(key=lambda schedule: fitness_function(schedule), reverse=True)
         new_population.extend(population[:elitism_size])
 
@@ -151,8 +146,20 @@ genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, pop
 
 final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
-st.write("\nFinal Optimal Schedule:")
-for time_slot, program in enumerate(final_schedule):
-    st.write(f"Time Slot {all_time_slots[time_slot]:02d}:00 - Program {program}")
+# Generate the table
+def generate_table(schedule, time_slots):
+    table = PrettyTable()
+    table.field_names = ["Time Slot", "Program"]
 
-st.write("Total Ratings:", fitness_function(final_schedule))
+    for time_slot, program in enumerate(schedule):
+        start_time = f"{time_slots[time_slot]:02d}:00"
+        end_time = f"{time_slots[time_slot] + 1:02d}:00"
+        time_range = f"{start_time} - {end_time}"
+        table.add_row([time_range, program])
+
+    print("Final Optimal TV Schedule:")
+    print(table)
+    print(f"Total Ratings: {fitness_function(schedule)}")
+
+# Display the table
+generate_table(final_schedule, all_time_slots)
