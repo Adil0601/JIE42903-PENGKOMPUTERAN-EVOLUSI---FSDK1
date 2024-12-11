@@ -1,19 +1,21 @@
 import csv
 import random
 import streamlit as st
-from prettytable import PrettyTable
 
 # Function to read the CSV file and convert it to the desired format
 def read_csv_to_dict(file_path):
     program_ratings = {}
+    
     with open(file_path, mode='r', newline='') as file:
         reader = csv.reader(file)
         # Skip the header
         header = next(reader)
+        
         for row in reader:
             program = row[0]
             ratings = [float(x) for x in row[1:]]  # Convert the ratings to floats
             program_ratings[program] = ratings
+    
     return program_ratings
 
 # Path to the CSV file
@@ -22,9 +24,24 @@ file_path = 'pages/program_ratings.csv'
 # Get the data in the required format
 program_ratings_dict = read_csv_to_dict(file_path)
 
+# Print the result (you can also return or process it further)
+for program, ratings in program_ratings_dict.items():
+    st.write(f"'{program}': {ratings},")
+
 ##################################### DEFINING PARAMETERS AND DATASET ################################################################
 # Sample rating programs dataset for each time slot.
 ratings = program_ratings_dict
+
+# Default parameters
+GEN = 100
+POP = 50
+CO_R = 0.8
+MUT_R = 0.2
+EL_S = 2
+
+# Allow user input for crossover rate and mutation rate
+CO_R = st.sidebar.slider("Crossover Rate (CO_R)", 0.0, 0.95, 0.8, 0.01)
+MUT_R = st.sidebar.slider("Mutation Rate (MUT_R)", 0.01, 0.05, 0.2, 0.01)
 
 all_programs = list(ratings.keys())  # all programs
 all_time_slots = list(range(6, 24))  # time slots
@@ -62,6 +79,14 @@ def finding_best_schedule(all_schedules):
 
     return best_schedule
 
+# calling the pop func.
+all_possible_schedules = initialize_pop(all_programs, all_time_slots)
+
+# calling the schedule func.
+best_schedule = finding_best_schedule(all_possible_schedules)
+
+############################################# GENETIC ALGORITHM #############################################################################
+
 # Crossover
 def crossover(schedule1, schedule2):
     crossover_point = random.randint(1, len(schedule1) - 2)
@@ -76,8 +101,8 @@ def mutate(schedule):
     schedule[mutation_point] = new_program
     return schedule
 
-# Genetic Algorithm
-def genetic_algorithm(initial_schedule, generations, population_size, crossover_rate, mutation_rate, elitism_size):
+# genetic algorithms with parameters
+def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, crossover_rate=CO_R, mutation_rate=MUT_R, elitism_size=EL_S):
     population = [initial_schedule]
 
     for _ in range(population_size - 1):
@@ -110,50 +135,19 @@ def genetic_algorithm(initial_schedule, generations, population_size, crossover_
 
     return population[0]
 
-# Streamlit UI
-st.title("TV Program Scheduler with Genetic Algorithm")
+##################################################### RESULTS ###################################################################################
 
-# Input parameters
-st.sidebar.header("Genetic Algorithm Parameters")
-crossover_rate = st.sidebar.slider("Crossover Rate (CO_R)", 0.0, 0.95, 0.8, 0.01)
-mutation_rate = st.sidebar.slider("Mutation Rate (MUT_R)", 0.01, 0.05, 0.2, 0.01)
-generations = st.sidebar.number_input("Generations (GEN)", min_value=10, max_value=1000, value=100, step=10)
-population_size = st.sidebar.number_input("Population Size (POP)", min_value=10, max_value=500, value=50, step=10)
-elitism_size = st.sidebar.number_input("Elitism Size (EL_S)", min_value=1, max_value=10, value=2, step=1)
-
-# Brute force (initial best schedule)
-all_possible_schedules = initialize_pop(all_programs, all_time_slots)
+# brute force
 initial_best_schedule = finding_best_schedule(all_possible_schedules)
-rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
 
-# Genetic Algorithm
-st.write("Running Genetic Algorithm...")
-genetic_schedule = genetic_algorithm(
-    initial_best_schedule,
-    generations=generations,
-    population_size=population_size,
-    crossover_rate=crossover_rate,
-    mutation_rate=mutation_rate,
-    elitism_size=elitism_size
-)
+rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
+genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
 
 final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
-# Generate the table
-def generate_table(schedule, time_slots):
-    table = PrettyTable()
-    table.field_names = ["Time Slot", "Program"]
+# Display the results
+st.write("\nFinal Optimal Schedule:")
+for time_slot, program in enumerate(final_schedule):
+    st.write(f"Time Slot {all_time_slots[time_slot]:02d}:00 - Program {program}")
 
-    for time_slot, program in enumerate(schedule):
-        start_time = f"{time_slots[time_slot]:02d}:00"
-        end_time = f"{time_slots[time_slot] + 1:02d}:00"
-        time_range = f"{start_time} - {end_time}"
-        table.add_row([time_range, program])
-
-    return table
-
-# Display the final schedule
-table = generate_table(final_schedule, all_time_slots)
-st.write("### Final Optimal TV Schedule")
-st.text(table)
-st.write(f"### Total Ratings: {fitness_function(final_schedule)}")
+st.write("Total Ratings:", fitness_function(final_schedule))
