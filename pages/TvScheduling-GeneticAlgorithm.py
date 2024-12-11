@@ -26,7 +26,7 @@ program_ratings_dict = read_csv_to_dict(file_path)
 
 # Print the result (you can also return or process it further)
 for program, ratings in program_ratings_dict.items():
-    print(f"'{program}': {ratings},")
+    st.write(f"'{program}': {ratings},")
 
 
 ##################################### DEFINING PARAMETERS AND DATASET ################################################################
@@ -157,9 +157,9 @@ def generate_table(schedule, time_slots):
         time_range = f"{start_time} - {end_time}"
         table.add_row([time_range, program])
 
-    print("Final Optimal TV Schedule:")
-    print(table)
-    print(f"Total Ratings: {fitness_function(schedule)}")
+    st.write("Final Optimal TV Schedule:")
+    st.write(table)
+    st.write(f"Total Ratings: {fitness_function(schedule)}")
 
 # Display the table
 generate_table(final_schedule, all_time_slots)
