@@ -107,11 +107,12 @@ if st.sidebar.button("Run Trials"):
 
         final_schedule = schedule[:len(all_time_slots)]
         total_ratings = fitness_function(final_schedule)
-        results.append((trial + 1, crossover_rate, mutation_rate, final_schedule, total_ratings))
+        ratings_per_slot = [program_ratings_dict[program][i] for i, program in enumerate(final_schedule)]
+        results.append((trial + 1, crossover_rate, mutation_rate, final_schedule, total_ratings, ratings_per_slot))
 
     # Display results
     for trial_result in results:
-        trial, co_r, mut_r, schedule, total_ratings = trial_result
+        trial, co_r, mut_r, schedule, total_ratings, ratings_per_slot = trial_result
 
         st.write(f"### Trial {trial}")
         st.write(f"**Crossover Rate:** {co_r}, **Mutation Rate:** {mut_r}")
@@ -119,6 +120,7 @@ if st.sidebar.button("Run Trials"):
 
         table_data = {
             "Time Slot": [f"{time_slot}:00" for time_slot in all_time_slots],
-            "Program": schedule
+            "Program": schedule,
+            "Rating": ratings_per_slot
         }
         st.table(table_data)
