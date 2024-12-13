@@ -108,7 +108,7 @@ def genetic_algorithm(initial_schedule, crossover_rate, mutation_rate):
 
         population = new_population
 
-    return population[0]
+    return population[1]
 
 # Streamlit UI
 st.title("TV Program Scheduler with Genetic Algorithm")
