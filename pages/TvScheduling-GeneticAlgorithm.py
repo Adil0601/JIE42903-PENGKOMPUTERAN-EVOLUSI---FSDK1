@@ -77,24 +77,24 @@ def mutate(schedule):
     return schedule
 
 # Genetic Algorithm
-def genetic_algorithm(initial_schedule, generations, population_size, crossover_rate, mutation_rate, elitism_size):
+def genetic_algorithm(initial_schedule, mutation_rate):
     population = [initial_schedule]
 
-    for _ in range(population_size - 1):
+    for _ in range(49):  # Fixed population size to 50
         random_schedule = initial_schedule.copy()
         random.shuffle(random_schedule)
         population.append(random_schedule)
 
-    for generation in range(generations):
+    for _ in range(100):  # Fixed number of generations to 100
         new_population = []
 
         # Elitism
         population.sort(key=lambda schedule: fitness_function(schedule), reverse=True)
-        new_population.extend(population[:elitism_size])
+        new_population.extend(population[:2])  # Fixed elitism size to 2
 
-        while len(new_population) < population_size:
+        while len(new_population) < 50:
             parent1, parent2 = random.choices(population, k=2)
-            if random.random() < crossover_rate:
+            if random.random() < 0.8:  # Fixed crossover rate to 0.8
                 child1, child2 = crossover(parent1, parent2)
             else:
                 child1, child2 = parent1.copy(), parent2.copy()
@@ -114,12 +114,7 @@ def genetic_algorithm(initial_schedule, generations, population_size, crossover_
 st.title("TV Program Scheduler with Genetic Algorithm")
 
 # Input parameters
-st.sidebar.header("Genetic Algorithm Parameters")
-crossover_rate = st.sidebar.slider("Crossover Rate (CO_R)", 0.0, 0.95, 0.8, 0.01)
 mutation_rate = st.sidebar.slider("Mutation Rate (MUT_R)", 0.01, 0.05, 0.2, 0.01)
-generations = st.sidebar.number_input("Generations (GEN)", min_value=10, max_value=1000, value=100, step=10)
-population_size = st.sidebar.number_input("Population Size (POP)", min_value=10, max_value=500, value=50, step=10)
-elitism_size = st.sidebar.number_input("Elitism Size (EL_S)", min_value=1, max_value=10, value=2, step=1)
 
 # Brute force (initial best schedule)
 all_possible_schedules = initialize_pop(all_programs, all_time_slots)
@@ -130,28 +125,26 @@ rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
 st.write("Running Genetic Algorithm...")
 genetic_schedule = genetic_algorithm(
     initial_best_schedule,
-    generations=generations,
-    population_size=population_size,
-    crossover_rate=crossover_rate,
-    mutation_rate=mutation_rate,
-    elitism_size=elitism_size
+    mutation_rate=mutation_rate
 )
 
 final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
-# Generate the schedule as a list of dictionaries for Streamlit table display
-def generate_schedule_table(schedule, time_slots):
-    table_data = []
+# Generate the table
+def generate_table(schedule, time_slots):
+    table = PrettyTable()
+    table.field_names = ["Time Slot", "Program"]
+
     for time_slot, program in enumerate(schedule):
         start_time = f"{time_slots[time_slot]:02d}:00"
         end_time = f"{time_slots[time_slot] + 1:02d}:00"
         time_range = f"{start_time} - {end_time}"
-        table_data.append({"Time Slot": time_range, "Program": program})
-    return table_data
+        table.add_row([time_range, program])
 
-# Display the final schedule in a Streamlit table
+    return table
+
+# Display the final schedule
+table = generate_table(final_schedule, all_time_slots)
 st.write("### Final Optimal TV Schedule")
-schedule_table = generate_schedule_table(final_schedule, all_time_slots)
-st.table(schedule_table)
-
+st.text(table)
 st.write(f"### Total Ratings: {fitness_function(final_schedule)}")
