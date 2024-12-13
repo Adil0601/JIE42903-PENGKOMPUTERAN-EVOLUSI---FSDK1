@@ -132,21 +132,20 @@ genetic_schedule = genetic_algorithm(
 
 final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
-# Generate the table
-def generate_table(schedule, time_slots):
-    table = PrettyTable()
-    table.field_names = ["Time Slot", "Program"]
-
+# Generate the schedule as a list of dictionaries for Streamlit table display
+def generate_schedule_table(schedule, time_slots):
+    table_data = []
     for time_slot, program in enumerate(schedule):
         start_time = f"{time_slots[time_slot]:02d}:00"
         end_time = f"{time_slots[time_slot] + 1:02d}:00"
         time_range = f"{start_time} - {end_time}"
-        table.add_row([time_range, program])
+        table_data.append({"Time Slot": time_range, "Program": program})
+    return table_data
 
-    return table
-
-# Display the final schedule
-table = generate_table(final_schedule, all_time_slots)
+# Display the final schedule in a Streamlit table
 st.write("### Final Optimal TV Schedule")
-st.text(table)
+schedule_table = generate_schedule_table(final_schedule, all_time_slots)
+st.table(schedule_table)
+
 st.write(f"### Total Ratings: {fitness_function(final_schedule)}")
+
