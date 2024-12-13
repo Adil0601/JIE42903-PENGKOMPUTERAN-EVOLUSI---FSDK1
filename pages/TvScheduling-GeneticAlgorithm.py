@@ -77,7 +77,7 @@ def mutate(schedule):
     return schedule
 
 # Genetic Algorithm
-def genetic_algorithm(initial_schedule, mutation_rate):
+def genetic_algorithm(initial_schedule, crossover_rate, mutation_rate):
     population = [initial_schedule]
 
     for _ in range(49):  # Fixed population size to 50
@@ -94,7 +94,7 @@ def genetic_algorithm(initial_schedule, mutation_rate):
 
         while len(new_population) < 50:
             parent1, parent2 = random.choices(population, k=2)
-            if random.random() < 0.8:  # Fixed crossover rate to 0.8
+            if random.random() < crossover_rate:
                 child1, child2 = crossover(parent1, parent2)
             else:
                 child1, child2 = parent1.copy(), parent2.copy()
@@ -114,7 +114,8 @@ def genetic_algorithm(initial_schedule, mutation_rate):
 st.title("TV Program Scheduler with Genetic Algorithm")
 
 # Input parameters
-mutation_rate = st.sidebar.slider("Mutation Rate (MUT_R)", 0.01, 0.05, 0.2, 0.01)
+crossover_rate = st.sidebar.number_input("Crossover Rate (CO_R)", min_value=0.0, max_value=1.0, value=0.8, step=0.01)
+mutation_rate = st.sidebar.number_input("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
 
 # Brute force (initial best schedule)
 all_possible_schedules = initialize_pop(all_programs, all_time_slots)
@@ -125,6 +126,7 @@ rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
 st.write("Running Genetic Algorithm...")
 genetic_schedule = genetic_algorithm(
     initial_best_schedule,
+    crossover_rate=crossover_rate,
     mutation_rate=mutation_rate
 )
 
