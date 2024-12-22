@@ -1,3 +1,4 @@
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -57,8 +58,13 @@ for i, task in enumerate(df['Task']):
 # Format the Gantt chart
 ax.set_yticks(range(len(df)))
 ax.set_yticklabels(df['Task'])
-ax.set_xticks(pd.date_range(df['Start'].min(), df['End'].max(), freq='W').toordinal())
-ax.set_xticklabels(pd.date_range(df['Start'].min(), df['End'].max(), freq='W').strftime('%Y-%m-%d'), rotation=45, fontsize=8)
+
+# Generate xticks for weekly intervals
+xticks = pd.date_range(df['Start'].min(), df['End'].max(), freq='W')
+ax.set_xticks([x.toordinal() for x in xticks])
+ax.set_xticklabels(xticks.strftime('%Y-%m-%d'), rotation=45, fontsize=8)
+
+# Adjust the chart layout
 ax.invert_yaxis()  # Invert y-axis for top-down order
 ax.set_xlabel('Timeline')
 ax.set_title('Gantt Chart for SITISMART Project', fontsize=14)
